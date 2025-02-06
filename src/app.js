@@ -11,7 +11,8 @@ camera.attachControl(canvas, true);
 const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
 
 
-// Create Ground
+
+//create ground
 function createGround(scene) {
     const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("ground", "/images/hmap1.png", {
         width: 2000,
@@ -33,38 +34,37 @@ function createGround(scene) {
     return ground;
 }
 
+//create the obtsacles
 function createObstacles(scene) {
     const obstacles = [];
 
-    // Obstacle 1: Colorful Cube
     const obstacle1 = BABYLON.MeshBuilder.CreateBox("obstacle1", { size: 1 }, scene);
-    obstacle1.position.set(2, 0.5, 2); // Move it up by half its height
+    obstacle1.position.set(2, 0.5, 2);
     const mat1 = new BABYLON.StandardMaterial("mat1", scene);
-    mat1.diffuseColor = new BABYLON.Color3(1, 0, 0); // Red
+    mat1.diffuseColor = new BABYLON.Color3(1, 0, 0);
     obstacle1.material = mat1;
     obstacle1.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle1, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.6 }, scene);
     obstacles.push(obstacle1);
 
-    // Obstacle 2: Cylinder
     const obstacle2 = BABYLON.MeshBuilder.CreateCylinder("obstacle2", { diameter: 1, height: 2 }, scene);
-    obstacle2.position.set(-2, 1, -2); // Move it up by half its height
+    obstacle2.position.set(-2, 1, -2);
     const mat2 = new BABYLON.StandardMaterial("mat2", scene);
-    mat2.diffuseColor = new BABYLON.Color3(0, 0, 1); // Blue
+    mat2.diffuseColor = new BABYLON.Color3(0, 0, 1);
     obstacle2.material = mat2;
     obstacle2.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle2, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 0, restitution: 0.6 }, scene);
     obstacles.push(obstacle2);
 
-    // Obstacle 3: Cone
     const obstacle3 = BABYLON.MeshBuilder.CreateCylinder("obstacle3", { diameterTop: 0, diameterBottom: 1, height: 2 }, scene);
-    obstacle3.position.set(0, 1, 3); // Move it up by half its height
+    obstacle3.position.set(0, 1, 3);
     const mat3 = new BABYLON.StandardMaterial("mat3", scene);
-    mat3.diffuseColor = new BABYLON.Color3(0, 1, 0); // Green
+    mat3.diffuseColor = new BABYLON.Color3(0, 1, 0);
     obstacle3.material = mat3;
     obstacle3.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle3, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 0, restitution: 0.6 }, scene);
     obstacles.push(obstacle3);
 
     return obstacles;
 }
+
 
 function createFreeCamera(scene) {
     let camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(0, 50, 0), scene);
@@ -91,9 +91,9 @@ function createFreeCamera(scene) {
 function createFollowCamera(scene, target) {
     let camera = new BABYLON.FollowCamera("marbleFollowCamera", target.position, scene, target);
 
-    camera.radius = 20; // how far from the object to follow
-	camera.heightOffset = 10; // how high above the object to place the camera
-	camera.rotationOffset = 180; // the viewing angle
+    camera.radius = 10; // how far from the object to follow
+	camera.heightOffset = 5; // how high above the object to place the camera
+	camera.rotationOffset = 200; // the viewing angle
 	camera.cameraAcceleration = .1; // how fast to move
 	camera.maxCameraSpeed = 5; // speed limit
 
@@ -114,24 +114,24 @@ sphereMaterials[1].diffuseColor = new BABYLON.Color3(5, 0, 1);
 sphereMaterials[1].specularColor = new BABYLON.Color3(0, 0, 3);
 sphereMaterials[1].specularPower = 256;
 
-sphereMaterials[3] = new BABYLON.StandardMaterial("sphereMaterial3", scene);
-sphereMaterials[3].diffuseTexture = new BABYLON.Texture("/images/rainbow.jpg", scene);
-sphereMaterials[3].emissiveColor = new BABYLON.Color3.Green;
+sphereMaterials[2] = new BABYLON.StandardMaterial("sphereMaterial3", scene);
+sphereMaterials[2].diffuseTexture = new BABYLON.Texture("/images/rainbow.jpg", scene);
+sphereMaterials[2].emissiveColor = new BABYLON.Color3.Green;
 
-sphereMaterials[6] = new BABYLON.StandardMaterial("sphereMaterial6", scene);
-sphereMaterials[6].ambientColor = new BABYLON.Color3(0, 0.8, 0);
-sphereMaterials[6].diffuseColor = new BABYLON.Color3(1, 0, 0);
-sphereMaterials[6].alpha = 0.5;
+sphereMaterials[3] = new BABYLON.StandardMaterial("sphereMaterial6", scene);
+sphereMaterials[3].ambientColor = new BABYLON.Color3(0, 0.8, 0);
+sphereMaterials[3].diffuseColor = new BABYLON.Color3(1, 0, 0);
+sphereMaterials[3].alpha = 0.5;
 
-sphereMaterials[7] = new BABYLON.StandardMaterial("sphereMaterial7", scene);
-sphereMaterials[7].diffuseTexture = new BABYLON.Texture("/images/world-map.jpg", scene);
-sphereMaterials[7].diffuseTexture.hasAlpha = true;
-sphereMaterials[7].emissiveColor = new BABYLON.Color3.Red;
+sphereMaterials[4] = new BABYLON.StandardMaterial("sphereMaterial7", scene);
+sphereMaterials[4].diffuseTexture = new BABYLON.Texture("/images/world-map.jpg", scene);
+sphereMaterials[4].diffuseTexture.hasAlpha = true;
+sphereMaterials[4].emissiveColor = new BABYLON.Color3.Red;
 
-sphereMaterials[8] = new BABYLON.StandardMaterial("sphereMaterial8", scene);
-sphereMaterials[8].ambientColor = new BABYLON.Color3(0, 0.3, 0);
-sphereMaterials[8].bumpTexture = new BABYLON.Texture("/images/world-map.jpg", scene);
-sphereMaterials[8].bumpTexture.level = 15.0;
+sphereMaterials[5] = new BABYLON.StandardMaterial("sphereMaterial8", scene);
+sphereMaterials[5].ambientColor = new BABYLON.Color3(0, 0.3, 0);
+sphereMaterials[5].bumpTexture = new BABYLON.Texture("/images/world-map.jpg", scene);
+sphereMaterials[5].bumpTexture.level = 15.0;
 
 // Create ball options for selection
 const ballOptionsContainer = document.getElementById('ballOptions');
@@ -177,8 +177,6 @@ function startGame() {
         return;
     }
 
-    scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), new BABYLON.CannonJSPlugin());
-
     createGround(scene);
 
     // Clear the ball selection UI
@@ -205,7 +203,6 @@ function startGame() {
     let followCamera = createFollowCamera(scene, marble);
     scene.activeCamera = followCamera;
 
-    
     // Prevent sinking by adjusting collision handling
     marble.physicsImpostor.registerOnPhysicsCollide(obstacles.map(obs => obs.physicsImpostor), function (collider, collidedWith) {
         console.log("Collision detected!");
