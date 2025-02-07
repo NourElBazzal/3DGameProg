@@ -10,29 +10,29 @@ camera.attachControl(canvas, true);
 //Lighting
 const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
 
-
+scene.enablePhysics();
 
 //create ground
 function createGround(scene) {
-    const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("ground", "/images/hmap1.png", {
-        width: 2000,
-        height: 2000,
-        subdivisions: 20,
-        minHeight: 0,
-        maxHeight: 100
-    }, scene, (ground) => {
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = new BABYLON.Texture("/images/texture-grass.jpg", scene);
-        groundMaterial.diffuseTexture.uScale = 20;
-        groundMaterial.diffuseTexture.vScale = 20;
+    const groundOptions = { width:2000, height:2000, subdivisions:20, minHeight:0, maxHeight:100, onReady: onGroundCreated};
+    //scene is optional and defaults to the current scene
+    const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", '/images/hmap1.png', groundOptions, scene); 
 
+    function onGroundCreated() {
+        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        groundMaterial.diffuseTexture = new BABYLON.Texture("/images/back.jpg");
         ground.material = groundMaterial;
-        ground.receiveShadows = true;
+        // to be taken into account by collision detection
         ground.checkCollisions = true;
-        ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.HeightmapImpostor, { mass: 0, restitution: 0.6 }, scene);
-    });
+        //groundMaterial.wireframe=true;
+
+        // for physic engine
+        ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground,
+            BABYLON.PhysicsImpostor.HeightmapImpostor, { mass: 0 }, scene);    
+    }
     return ground;
 }
+
 
 //create the obtsacles
 function createObstacles(scene) {
@@ -43,7 +43,7 @@ function createObstacles(scene) {
     const mat1 = new BABYLON.StandardMaterial("mat1", scene);
     mat1.diffuseColor = new BABYLON.Color3(1, 0, 0);
     obstacle1.material = mat1;
-    obstacle1.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle1, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.6 }, scene);
+    obstacle1.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle1, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.2, friction: 0.8 }, scene);
     obstacles.push(obstacle1);
 
     const obstacle2 = BABYLON.MeshBuilder.CreateCylinder("obstacle2", { diameter: 1, height: 2 }, scene);
@@ -51,15 +51,16 @@ function createObstacles(scene) {
     const mat2 = new BABYLON.StandardMaterial("mat2", scene);
     mat2.diffuseColor = new BABYLON.Color3(0, 0, 1);
     obstacle2.material = mat2;
-    obstacle2.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle2, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 0, restitution: 0.6 }, scene);
+    obstacle2.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle2, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.6, friction: 1}, scene);
     obstacles.push(obstacle2);
+
 
     const obstacle3 = BABYLON.MeshBuilder.CreateCylinder("obstacle3", { diameterTop: 0, diameterBottom: 1, height: 2 }, scene);
     obstacle3.position.set(0, 1, 3);
     const mat3 = new BABYLON.StandardMaterial("mat3", scene);
     mat3.diffuseColor = new BABYLON.Color3(0, 1, 0);
     obstacle3.material = mat3;
-    obstacle3.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle3, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 0, restitution: 0.6 }, scene);
+    obstacle3.physicsImpostor = new BABYLON.PhysicsImpostor(obstacle3, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.2, friction: 0.8 }, scene);
     obstacles.push(obstacle3);
 
     return obstacles;
@@ -190,7 +191,7 @@ function startGame() {
      marble.physicsImpostor = new BABYLON.PhysicsImpostor(
          marble,
          BABYLON.PhysicsImpostor.SphereImpostor,
-         { mass: 1, restitution: 0.9, friction: 0.3 },
+         { mass: 1, restitution: 0.2, friction: 0.8, damping: 0.5 },
          scene
      );
 
@@ -204,12 +205,12 @@ function startGame() {
     scene.activeCamera = followCamera;
 
     // Prevent sinking by adjusting collision handling
-    marble.physicsImpostor.registerOnPhysicsCollide(obstacles.map(obs => obs.physicsImpostor), function (collider, collidedWith) {
+    marble.physicsImpostor.registerOnPhysicsCollide(obstacles.map(obs => obs.physicsImpostor), (collider, collidedWith) => {
         console.log("Collision detected!");
-        collider.setLinearVelocity(new BABYLON.Vector3.Zero()); // Stop movement on impact
-        collider.setAngularVelocity(new BABYLON.Vector3.Zero()); // Stop spinning
+        collider.setLinearVelocity(collider.getLinearVelocity().scale(0.5)); // Reduce velocity by half
+        collider.setAngularVelocity(collider.getAngularVelocity().scale(0.3)); // Reduce rotation
     });
-
+    
     // Add movement controls for the marble
     window.addEventListener("keydown", (event) => {
         let force = new BABYLON.Vector3(0, 0, 0);
